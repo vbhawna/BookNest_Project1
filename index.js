@@ -5,8 +5,11 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 
+async function connectToDB() {
+    await initializeDatabase();
+}
 
-initializeDatabase();
+connectToDB();
 
 const corsOptions = {
     origin: "*",
