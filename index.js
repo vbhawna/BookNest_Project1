@@ -5,12 +5,6 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 
-async function connectToDB() {
-    await initializeDatabase();
-}
-
-connectToDB();
-
 const corsOptions = {
     origin: "*",
     credentials: true,
@@ -26,7 +20,19 @@ app.use("/books", bookRoutes);
 app.use("/genres", genreRouter);
 
 const PORT = 5000;
-app.listen(PORT, () => {
-    console.log("Server is running on Port: ", PORT);
-})
+
+async function startServer() {
+    try {
+        await initializeDatabase();
+
+        app.listen(PORT, () => {
+            console.log("Server is running on Port: ", PORT);
+        });
+
+    } catch(error) {
+        console.error("Failed to start Server:", error);
+    }
+}
+
+startServer();
 
