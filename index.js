@@ -21,13 +21,13 @@ app.use(async (req, res, next) => {
 
     try {
         await initializeDatabase();
-        console.log("Database connected. Calling nex()");
+        console.log("Database connected. Calling next()");
         next();
     } catch(error) {
         console.log("Database Connection failed. Calling next(error).");
         next(error);
     }
-})
+});
 
 app.use("/books", bookRoutes);
 

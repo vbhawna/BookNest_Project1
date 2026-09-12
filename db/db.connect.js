@@ -1,10 +1,11 @@
-const dns = require("dns");
-dns.setServers(["8.8.8.8", "8.8.4.4"]);
-
 const mongoose = require("mongoose");
 require("dotenv").config();
 
 const mongoUrl = process.env.MONGODB;
+
+if (!mongoUrl) {
+  throw new Error("MONGODB environment variable is missing");
+}
 
 let connectionPromise;
 
