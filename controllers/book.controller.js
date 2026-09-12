@@ -1,6 +1,7 @@
 const Book = require("../models/book.models");
 
 async function getAllBooks(req, res) {
+    console.log("getAllBook Controller started executing.")
     try {
         const allBooks = await Book.find();
         if(allBooks.length > 0) {
@@ -16,6 +17,7 @@ async function getAllBooks(req, res) {
 }
 
 async function getBookById(req, res) {
+    console.log("getBookById Controller started executing.")
     try {
         const book = await Book.findById(req.params.bookId);
         if(book) {

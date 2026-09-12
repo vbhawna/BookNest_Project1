@@ -6,12 +6,26 @@ require("dotenv").config();
 
 const mongoUrl = process.env.MONGODB;
 
+let connectionPromise;
+
 async function initializeDatabase() {
+    if(mongoose.connection.readyState === 1) {
+        console.log("Using existing MongoDB connection");
+        return;
+    }
+
+    if(mongoose.connection.readyState === 2) {
+        console.log("Wait for same MongoDB connection, it is already in progress");
+        return connectionPromise;
+    }
+
+    console.log("Creating new MongoDB connection");
+    connectionPromise = mongoose.connect(mongoUrl);
+
     try {
-        await mongoose.connect(mongoUrl);
-        console.log("Successfully connected to the database.");
+        await connectionPromise;
     } catch(error) {
-        console.error("Error connecting to the database: ", error);
+        connectionPromise = null;
         throw error;
     }
 }
