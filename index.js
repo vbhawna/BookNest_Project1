@@ -1,6 +1,7 @@
 const { initializeDatabase } = require("./db/db.connect");
 const bookRoutes = require("./routes/book.routes");
 const genreRouter = require("./routes/genre.routes");
+const addressRoutes = require("./routes/address.routes");
 const express = require("express");
 const cors = require("cors");
 
@@ -32,6 +33,8 @@ app.use(async (req, res, next) => {
 app.use("/books", bookRoutes);
 
 app.use("/genres", genreRouter);
+
+app.use("/addresses", addressRoutes)
 
 app.use((error, req, res, next) => {
     console.error("Error-Handling middleware:", error);
