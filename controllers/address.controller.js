@@ -1,12 +1,21 @@
 const Address = require("../models/address.models");
+const User = require("../models/user.model");
 
 const createAddress = async(req, res, next) => {
     console.log("createAddress Controller Started executing");
 
     try {
-        const addressData = req.body;
+        const {userId, ...addressData} = req.body;
 
-        const address = new Address(addressData);
+        const user = await User.findById(userId);
+
+        if(!user) {
+            return res.status(404).json({
+                message: "User not found",
+            });
+        }
+        
+        const address = new Address({user: userId, ...addressData});
 
         const savedAddress = await address.save();
 
@@ -23,7 +32,8 @@ const getAllAddresses = async (req, res, next) => {
     console.log("getAllAddresses Controller Started executing.");
 
     try {
-        const allAddresses = await Address.find();
+        const { userId } = req.query;
+        const allAddresses = await Address.find({ user: userId });
 
         res.status(200).json({
             message: "Fetched Addresses successfully.",
@@ -40,7 +50,9 @@ const getAddressById = async (req, res, next) => {
 
     try {
         const addressId = req.params.addressId;
-        const address = await Address.findById(addressId);
+        const { userId } = req.query;
+
+        const address = await Address.findOne({ _id: addressId, user: userId });
         if(!address) {
             return res.status(404).json({
                 message: "Address not found.",
@@ -62,8 +74,9 @@ const getAddressById = async (req, res, next) => {
 const updateAddress = async (req, res, next) => {
     try {
             const addressId = req.params.addressId;
+            const { userId } = req.query;
             const updatedData = req.body;
-            const updatedAddress = await Address.findByIdAndUpdate(addressId, updatedData, {returnDocument: 'after', runValidators: true});
+            const updatedAddress = await Address.findOneAndUpdate({_id: addressId, user: userId}, updatedData, {returnDocument: 'after', runValidators: true});
             if(!updatedAddress) {
                 return res.status(404).json({
                     message: "Address not found.",
@@ -84,7 +97,8 @@ const updateAddress = async (req, res, next) => {
 const deleteAddress = async (req, res, next) => {
     try {
         const addressId = req.params.addressId;
-        const deletedAddress = await Address.findByIdAndDelete(addressId);
+        const { userId } = req.query;
+        const deletedAddress = await Address.findOneAndDelete({ _id: addressId, user: userId });
         if(!deletedAddress) {
             return res.status(404).json({message: "Address not found."});
         }
