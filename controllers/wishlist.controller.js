@@ -29,6 +29,9 @@ const addToWishlist = async (req, res, next) => {
     try {
         const {userId, bookId } = req.body;
 
+        console.log("userId: ", userId);
+        console.log("bookId: ", bookId);
+
         const wishlist = await Wishlist.findOne({ user: userId });
 
         if(!wishlist) {
@@ -42,7 +45,7 @@ const addToWishlist = async (req, res, next) => {
         }
 
         const updatedWishlist = await Wishlist.findOneAndUpdate(
-            { user: userId, books: bookId },
+            { user: userId },
             { $addToSet: { books: bookId } },
             { returnDocument: "after" },
         ).populate("books");
@@ -66,7 +69,7 @@ const removeFromWishlist = async (req, res, next) => {
         const { userId } = req.query;
 
         const updatedWishlist = await Wishlist.findOneAndUpdate(
-            { user: userId }, 
+            { user: userId, books: bookId }, 
             { $pull : { books: bookId }},
             { returnDocument: "after" }
         ).populate("books");
