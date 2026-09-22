@@ -4,6 +4,7 @@ const genreRouter = require("./routes/genre.routes");
 const addressRoutes = require("./routes/address.routes");
 const express = require("express");
 const cors = require("cors");
+const wishlistRouter = require("./routes/wishlist.routes");
 
 const app = express();
 
@@ -34,7 +35,9 @@ app.use("/books", bookRoutes);
 
 app.use("/genres", genreRouter);
 
-app.use("/addresses", addressRoutes)
+app.use("/addresses", addressRoutes);
+
+app.use("/wishlist", wishlistRouter);
 
 app.use((error, req, res, next) => {
     console.error("Error-Handling middleware:", error);
