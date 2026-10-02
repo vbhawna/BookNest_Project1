@@ -24,7 +24,7 @@ const addToCart = async (req, res, next) => {
             });
         }
 
-        const cart = await Cart.findOne({ user: userId });
+        const cart = await Cart.findOne({ user: userId }).populate("items.book");
 
         if(!cart) {
             const newCart = await Cart.create({
@@ -112,7 +112,7 @@ const updateCartQuantity = async (req, res, next) => {
         const { userId, operation } = req.body;
         const { bookId } = req.params;
 
-        const cart = await Cart.findOne({ user: userId });
+        const cart = await Cart.findOne({ user: userId }).populate("items.book");
 
         if (!cart) {
             return res.status(404).json({
@@ -170,7 +170,7 @@ const removeFromCart = async (req, res, next) => {
         const userId = req.query.userId;
 
         // find cart
-        const cart = await Cart.findOne({ user: userId });
+        const cart = await Cart.findOne({ user: userId }).populate("items.book");
 
         // check cart
         if(!cart) {
