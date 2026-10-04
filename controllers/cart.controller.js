@@ -24,7 +24,7 @@ const addToCart = async (req, res, next) => {
             });
         }
 
-        const cart = await Cart.findOne({ user: userId }).populate("items.book");
+        const cart = await Cart.findOne({ user: userId })
 
         if(!cart) {
             const newCart = await Cart.create({
@@ -34,6 +34,8 @@ const addToCart = async (req, res, next) => {
                     quantity: 1,
                 }],
             });
+
+            await newCart.populate("items.book");
 
             return res.status(201).json({
                 message: "Cart created successfully.",
@@ -46,8 +48,11 @@ const addToCart = async (req, res, next) => {
         );
 
         if(existingItem) {
-            return res.json({
+            await cart.populate("items.book");
+
+            return res.status(200).json({
                 message: "Book is already in the cart.",
+                cart,
             });
         } else {
             cart.items.push({
@@ -55,6 +60,8 @@ const addToCart = async (req, res, next) => {
                 quantity: 1,
             });
             await cart.save();
+
+            await cart.populate("items.book");
 
             return res.status(200).json({
                 message: "Book added to the cart successfully.",
@@ -112,7 +119,7 @@ const updateCartQuantity = async (req, res, next) => {
         const { userId, operation } = req.body;
         const { bookId } = req.params;
 
-        const cart = await Cart.findOne({ user: userId }).populate("items.book");
+        const cart = await Cart.findOne({ user: userId });
 
         if (!cart) {
             return res.status(404).json({
@@ -148,6 +155,8 @@ const updateCartQuantity = async (req, res, next) => {
 
         await cart.save();
 
+        await cart.populate("items.book");
+
         return res.status(200).json({
             message: "Cart updated successfully.",
             cart,
@@ -170,7 +179,7 @@ const removeFromCart = async (req, res, next) => {
         const userId = req.query.userId;
 
         // find cart
-        const cart = await Cart.findOne({ user: userId }).populate("items.book");
+        const cart = await Cart.findOne({ user: userId });
 
         // check cart
         if(!cart) {
@@ -196,6 +205,8 @@ const removeFromCart = async (req, res, next) => {
 
         // save cart
         await cart.save();
+
+        await cart.populate("items.book");
 
         // return updated cart
         return res.status(200).json({
