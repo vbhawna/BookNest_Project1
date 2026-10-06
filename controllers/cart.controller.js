@@ -119,7 +119,13 @@ const updateCartQuantity = async (req, res, next) => {
         const { userId, operation } = req.body;
         const { bookId } = req.params;
 
+        console.log("PATCH userId:", userId);
+        console.log("PATCH bookId:", bookId);
+        console.log("PATCH operation:", operation);
+
         const cart = await Cart.findOne({ user: userId });
+
+        console.log("Found cart:", cart);
 
         if (!cart) {
             return res.status(404).json({

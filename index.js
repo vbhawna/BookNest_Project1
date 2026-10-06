@@ -6,6 +6,7 @@ const genreRouter = require("./routes/genre.routes");
 const addressRoutes = require("./routes/address.routes");
 const wishlistRouter = require("./routes/wishlist.routes");
 const cartRouter = require("./routes/cart.routes");
+const orderRouter = require("./routes/order.routes");
 
 const app = express();
 
@@ -41,6 +42,8 @@ app.use("/addresses", addressRoutes);
 app.use("/wishlist", wishlistRouter);
 
 app.use("/cart", cartRouter);
+
+app.use("/orders", orderRouter);
 
 app.use((error, req, res, next) => {
     console.error("Error-Handling middleware:", error);
