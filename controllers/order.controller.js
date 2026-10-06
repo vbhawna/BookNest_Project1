@@ -47,11 +47,11 @@ const createOrder = async (req, res, next) => {
             }, 0);
 
         const discount = cart.items.reduce((total, item) => (
-            total + (item.book.originalPrice * sellingPrice(item.book.originalPrice, item.book.discountPercentage)) * item.quantity
+            total + (item.book.originalPrice - sellingPrice(item.book.originalPrice, item.book.discountPercentage)) * item.quantity
         ), 0);
 
         const deliveryCharge = subtotal >= 500 ? 0 : 50;
-        
+
         const total = subtotal - discount + deliveryCharge;
 
         const newOrder = await Order.create({
