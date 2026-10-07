@@ -18,6 +18,10 @@ const orderSchema = new mongoose.Schema({
                 type: String,
                 required: true,
             },
+            mrpAtPurchase: {
+                type: Number,
+                required: true,
+            },
             priceAtPurchase: {
                 type: Number,
                 required: true,
@@ -70,12 +74,17 @@ const orderSchema = new mongoose.Schema({
         },
     },
 
-    subtotal: {
+    totalMRP: {
         type: Number,
         required: true,
     },
 
     discount: {
+        type: Number,
+        required: true,
+    },
+
+    totalSP: {
         type: Number,
         required: true,
     },

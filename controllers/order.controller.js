@@ -38,21 +38,27 @@ const createOrder = async (req, res, next) => {
         const orderItems = cart.items.map((item) => ({
             book: item.book._id,
             title: item.book.title,
+            mrpAtPurchase: item.book.originalPrice,
             priceAtPurchase: sellingPrice(item.book.originalPrice, item.book.discountPercentage),
             quantity: item.quantity,
         }));
 
-        const subtotal = cart.items.reduce((total, item) => {
+        const totalMRP = cart.items.reduce((total, item) => {
+            return (
+                total +
+                item.book.originalPrice * item.quantity
+            );
+        }, 0);
+
+        const totalSP = cart.items.reduce((total, item) => {
                 return total + item.quantity * sellingPrice(item.book.originalPrice, item.book.discountPercentage)
             }, 0);
 
-        const discount = cart.items.reduce((total, item) => (
-            total + (item.book.originalPrice - sellingPrice(item.book.originalPrice, item.book.discountPercentage)) * item.quantity
-        ), 0);
+        const discount = totalMRP - totalSP;
 
-        const deliveryCharge = subtotal >= 500 ? 0 : 50;
+        const deliveryCharge = totalSP >= 500 ? 0 : 50;
 
-        const total = subtotal - discount + deliveryCharge;
+        const total = totalSP + deliveryCharge;
 
         const newOrder = await Order.create({
             user: userId,
@@ -68,8 +74,9 @@ const createOrder = async (req, res, next) => {
                 pincode: address.pincode,
                 addressType: address.addressType,
             },
-            subtotal,
+            totalMRP,
             discount,
+            totalSP,
             deliveryCharge,
             totalAmount: total,
         });
@@ -84,7 +91,7 @@ const createOrder = async (req, res, next) => {
             order: newOrder,
         });
     } catch(error) {
-        console.error("Error while creating order.");
+        console.error("Error while creating order: ", error);
         next(error);
     }
 };
