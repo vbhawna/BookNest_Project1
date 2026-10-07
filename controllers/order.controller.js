@@ -38,6 +38,7 @@ const createOrder = async (req, res, next) => {
         const orderItems = cart.items.map((item) => ({
             book: item.book._id,
             title: item.book.title,
+            coverImage: item.book.coverImageUrl,
             mrpAtPurchase: item.book.originalPrice,
             priceAtPurchase: sellingPrice(item.book.originalPrice, item.book.discountPercentage),
             quantity: item.quantity,
@@ -96,4 +97,36 @@ const createOrder = async (req, res, next) => {
     }
 };
 
-module.exports = { createOrder };
+const getOrders = async (req, res, next) => {
+    console.log("getOrders controller started executing.");
+
+    try {
+        const userId = req.query.userId;
+
+        const user = await User.findById(userId);
+
+        if(!user) {
+            return res.status(404).json({
+                message: "User not found.",
+            });
+        }
+
+        const orders = await Order.find({ user: userId }).sort({ createdAt: -1 });
+
+        if(!orders || orders.length === 0) {
+            return res.status(404).json({
+                message: "No order list found.",
+            });
+        }
+
+        return res.status(200).json({
+            message: "Orders fetched successfully.",
+            orders,
+        });
+    } catch(error) {
+        console.log("Error while fetching orders: ", error);
+        next(error);
+    }
+}
+
+module.exports = { createOrder, getOrders };
